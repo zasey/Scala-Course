@@ -4,14 +4,15 @@ import scala.Option
 
 object PartialFunction extends App{
 
-  val chatbot: PartialFunction[String, Option[String]] =  {
-    case "hello" => Some("Hi, I'm Bot")
-    case "bye" => Some("Bye-bye")
-    case "what's up" => Some("sup-sup")
+  val pf: PartialFunction[String, String] =  {
+    case "hello" => "Hi, I'm Bot"
+    case "bye" => "Bye-bye"
+    case "what's up" => "sup-sup"
   }
 
-  chatbot.lift
+  val chatbot = pf.lift
 
   println(chatbot("hello"))
+  println(chatbot("asfas"))
 
 }
