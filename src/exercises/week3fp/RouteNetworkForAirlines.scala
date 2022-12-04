@@ -44,5 +44,20 @@ object RouteNetworkForAirlines extends App {
 
   def isConnected(network: Map[String, Set[String]], pointA: String, pointB: String): Boolean = {
 
+    @tailrec
+    def loop(points: Set[String]): Boolean = {
+      if(points.isEmpty) false
+      else if(network(points.head).contains(pointB)) true
+      else loop(points.tail)
+    }
+
+    if(network(pointA).contains(pointB)) true
+    else loop(network(pointA))
+
   }
+
+  val network: Map[String, Set[String]] = Map("A" -> Set("B"), "B" -> Set("A", "C"), "C" -> Set("B"), "D" -> Set("F"), "F" -> Set("D"))
+
+  print(isConnected(network, "A", "D")) //false
+  print(isConnected(network, "A", "C")) //true
 }
