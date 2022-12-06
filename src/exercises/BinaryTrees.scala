@@ -106,24 +106,100 @@ object BinaryTrees extends App {
     override def nodesAtLevel(level: Int): List[BinaryTree[Nothing]] = List()
   }
 
-  val tree = Node(1,
-    Node(2,
-      Node(4,
+  def hasPath(tree: BinaryTree[Int], target: Int): Boolean = {
+    @tailrec
+    def loop(toInspect: List[BinaryTree[Int]] = List(tree), savedNote: List[BinaryTree[Int]] = List(), acc: Int = 0, savedAcc:List[Int] = List(tree.value)): Boolean = {
+      if(toInspect.isEmpty) false
+      else if(toInspect.head.isLeaf)
+        if(toInspect.head.value + acc == target) true
+        else if(savedNote.isEmpty) false
+        else loop(List(savedNote.head), savedNote.tail, savedAcc.head, savedAcc.tail)
+      else
+        if(toInspect.head.value + acc < target)
+          if(toInspect.head.leftChild.isEmpty)
+            loop(List(toInspect.head.rightChild), savedNote, acc + toInspect.head.value, savedAcc)
+          else if(toInspect.head.rightChild.isEmpty)
+            loop(List(toInspect.head.leftChild), savedNote, acc + toInspect.head.value, savedAcc)
+          else
+            loop(List(toInspect.head.leftChild), toInspect.head.rightChild +: savedNote, acc + toInspect.head.value, (toInspect.head.value + acc) +: savedAcc)
+        else
+          if(savedNote.isEmpty) false
+          else
+            loop(List(savedNote.head), savedNote.tail, savedAcc.head, savedAcc.tail)
+    }
+    if(tree.isEmpty) false
+    else loop()
+  }
+
+  def findAllPaths(tree: BinaryTree[String], target: String): List[List[String]] = {
+    @tailrec
+    def loop(toInspect: List[BinaryTree[String]] = List(tree), savedNote: List[BinaryTree[String]] = List(), acc: Int = 0, savedAcc:List[Int] = List(tree.value.toInt), pathsList:List[List[BinaryTree[String]]] = List(), tempPathsList: List[List[BinaryTree[String]]] = List(), currentPath: List[BinaryTree[String]] = List()): List[List[BinaryTree[String]]] = {
+      if(toInspect.isEmpty) pathsList
+      else if(toInspect.head.isLeaf)
+        if(toInspect.head.value.toInt + acc == target.toInt)
+          if(savedNote.nonEmpty)
+            loop(List(savedNote.head), savedNote.tail, savedAcc.head, savedAcc.tail, pathsList :+ (currentPath :+ toInspect.head), tempPathsList.tail, tempPathsList.head)
+          else
+            pathsList :+ (currentPath :+ toInspect.head)
+        else if(savedNote.isEmpty) pathsList
+        else loop(List(savedNote.head), savedNote.tail, savedAcc.head, savedAcc.tail, pathsList, tempPathsList.tail, tempPathsList.head)
+      else
+        if(toInspect.head.value.toInt + acc < target.toInt)
+          if(toInspect.head.leftChild.isEmpty)
+            loop(List(toInspect.head.rightChild), savedNote, acc + toInspect.head.value.toInt, savedAcc, pathsList, tempPathsList, currentPath :+ toInspect.head)
+          else if(toInspect.head.rightChild.isEmpty)
+            loop(List(toInspect.head.leftChild), savedNote, acc + toInspect.head.value.toInt, savedAcc, pathsList, tempPathsList, currentPath :+ toInspect.head)
+          else
+            loop(List(toInspect.head.leftChild), toInspect.head.rightChild +: savedNote, acc + toInspect.head.value.toInt, (toInspect.head.value.toInt + acc) +: savedAcc, pathsList, (currentPath :+ toInspect.head) +: tempPathsList, currentPath :+ toInspect.head)
+        else
+          if(savedNote.isEmpty) pathsList
+          else
+            loop(List(savedNote.head), savedNote.tail, savedAcc.head, savedAcc.tail, pathsList, tempPathsList.tail, tempPathsList.head)
+    }
+    if(tree.isEmpty) List()
+    else loop().map(node => node.map(n => n.value))
+  }
+
+//  val tree = Node(1,
+//    Node(2,
+//      Node(4,
+//        TreeEnd,
+//        TreeEnd),
+//      Node(5,
+//        TreeEnd,
+//        Node(8,
+//          TreeEnd,
+//          TreeEnd))),
+//    Node(3,
+//      Node(6,
+//        TreeEnd,
+//        TreeEnd),
+//      Node(7,
+//        TreeEnd,
+//        TreeEnd)))
+
+  val tree = Node("1",
+    Node("2",
+      Node("4",
         TreeEnd,
         TreeEnd),
-      Node(5,
+      Node("5",
         TreeEnd,
-        Node(8,
+        Node("8",
           TreeEnd,
           TreeEnd))),
-    Node(3,
-      Node(6,
+    Node("3",
+      Node("6",
         TreeEnd,
         TreeEnd),
-      Node(7,
+      Node("7",
         TreeEnd,
-        TreeEnd)))
+        TreeEnd))
+  )
 
-  println(tree.nodesAtLevel(5).map(node=>node.value).sorted)
-  println(tree.collectNodes())
+
+  //println(tree.nodesAtLevel(5).map(node=>node.value).sorted)
+  //println(tree.collectNodes())
+  //println(hasPath(tree, 7))
+  println(findAllPaths(tree, "11"))
 }
